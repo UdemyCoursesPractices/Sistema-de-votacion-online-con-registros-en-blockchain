@@ -4,9 +4,9 @@ pragma experimental ABIEncoderV2; //Abiencoder es para calcular hashes
 
 //Candidato // EDAD // ID
 // TONI     // 20   // 201
-// Alberto // 35   // 203
-// Mirta   // 21   // 201
-//Pato     // 26   // 001
+// Alberto  // 35   // 203
+// Mirta    // 21   // 201
+// Pato     // 26   // 001
 
 contract votacion {
 
@@ -30,7 +30,18 @@ contract votacion {
         owner = msg.sender;
     }
 
-    
+    //Funcion que te permite presentarte como candidato.
+    //Memory, fuerza a que la variable se elimine una ves la funcion finalice.
+    function Representar(string memory _nombrePersona,uint _edadPersona, string memory _idPersona) public {
+        //hash de los datos del candidato.
+        bytes32 hash_Candidato = keccak256(abi.encodePacked(_nombrePersona, _edadPersona, _idPersona));
+        //almacenar el hash de los datos del candidato que estan ligados a su nombre
+        ID_Candidato[_nombrePersona] = hash_Candidato;
+        
+        //Actualizamos la lista de los candidatos.
+        candidatos.push(_nombrePersona);
+    }
 
+    
 
 }
