@@ -23,7 +23,7 @@ contract votacion {
     string[] candidatos;
 
     //Lista de los hashes de la identidad de los votantes. Con validacion, usamos bytes32 para mantener el anonimato.
-    bytes32[] votatantes;
+    bytes32[] votantes;
  
     //Constructor
     constructor () public {
@@ -42,6 +42,67 @@ contract votacion {
         candidatos.push(_nombrePersona);
     }
 
-    
+    //Esta funcion nos permite ver el vector de candidatos. String es un vector de nombres.
+    function verCandidatos() public view returns(string[] memory){
+        //Devuelve la lista de los candidatos presentados
+        return candidatos;
+    }
+
+    //Los votatantes usaran esta funcion para elegir a su candidato y votarlo
+    function votar(string memory _candidato) public {
+        //hash de la direccion de la persona que ejecuta esta funcion
+        bytes32 hash_Votante = keccak256(abi.encodePacked(msg.sender));
+        //verificamos si el votante ya a votado.
+        for(uint i= 0; i < votantes.length; i++){
+            require(votantes[i] != hash_Votante, "Ya votaste" );
+        }
+        //Almacenamos el hash del votante deltro del array de votantes
+        votantes.push(hash_Votante);
+        //Añadimos un voto al candidato seleccinado
+        votos_Candidato[_candidato]++;
+    }
+
+
+    //La cantidad de votos que tiene uun candidato.
+    function verVotos(string memory _nombreCandidato) public view returns(uint){
+        return votos_Candidato[_nombreCandidato];
+    }
+
+    //Funcion auxiliar que transforma un uint a un string
+
+    function uint2str(uint _i) internal pure returns (string memory _uintAsString) {
+        if (_i == 0) {
+            return "0";
+        }
+        uint j = _i;
+        uint len;
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+        bytes memory bstr = new bytes(len);
+        uint k = len - 1;
+        while (_i != 0) {
+            bstr[k--] = byte(uint8(48 + _i % 10));
+            _i /= 10;
+        }
+        return string(bstr);
+    }
+
+    //Ver los votos de cada uno de los candidatos.
+    function VerResultados() public view returns(string[] memory){
+        //guardamos en una variable los string los candidatos con sus respectivos votos
+        string memory resultados;
+
+        //Recorremos el array de candidatos para actualizar el string resultados
+        for(uint i=0; i < candidatos.length; i++ ){
+            //transformacion de bytes a string.
+            //Actualizamos el string resultados, y añadimos el candidato que ocupa la posicion "i" del array candidatos
+            // y su numero de votoss
+            resultados = string(abi.encodePacked(resultados,"C", candidatos[i], " ,", uint2str(verVotos(candidatos[i])), ")" ));
+        }
+        //devolvemos los resultados.
+        return resultados;
+    }
 
 }
