@@ -105,4 +105,32 @@ contract votacion {
         return resultados;
     }
 
+    //Proporcionar el nombre del candidato ganador
+    function Ganador() public view returns(string memory){
+        //la variable ganador va a contener el nombre del candidato ganador.
+        string memory ganador = candidatos[0];
+        //variable flag para empate
+        bool flag;
+
+        //recorremos el array de candidatos para determinar el candidato con un numero mayor de votos
+        for(uint i=1; i < candidatos.length; i++ ){
+            
+            //comparamos si nuestro ganador ha sido superado por otro candidato.
+           if( votos_Candidato[candidatos[i]] > votos_candidato[ganador]){
+               ganador= candidatos[i];
+               flag=false;
+           }else {
+               //miramos si hay empate entre los candidatos
+               if(votos_Candidato[candidatos[i]] == votos_candidato[ganador]){
+                   flag=true;            
+               }
+           }
+        }
+        //comprobamos si ha habido un empate entre los candidatos
+        if (flag==true){
+            ganador = "hay un empate entre los candiadatos";
+        } 
+        //devolvemos el ganador
+        return ganador;
+    }
 }
